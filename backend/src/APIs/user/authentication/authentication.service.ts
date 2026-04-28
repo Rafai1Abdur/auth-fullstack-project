@@ -80,7 +80,8 @@ export const registrationService = async (payload: IRegisterRequest) => {
     const newUser = await query.createUser(userObj)
 
     //Sending confimation emails
-    const confimationURL = `Frontendhost/confimation/${token}?code=${OTP}`
+    //const confimationURL = `Frontendhost/confimation/${token}?code=${OTP}`
+    const confimationURL = `http://localhost:3000/v1/registeration/confirm/${token}?code=${OTP}`
     const to = [email]
     const subject = `Confirm your account`
     const text = `Hey ${name}, Please confirm your account by clicking the link belown\n\n${confimationURL}`
@@ -137,7 +138,10 @@ export const loginService = async (payload: ILoginRequest) => {
     const { email, password } = payload
 
     //Check if the user is registered
-    const user = await query.findUserByEmail(email, 'password')
+    //const user = await query.findUserByEmail('email', 'password')
+    
+    const user = await query.findUserByEmail(email, '+password')
+    
     if (!user) {
         throw new CustomError(responseMessage.NOT_FOUND('User'), 404)
     }
@@ -146,6 +150,13 @@ export const loginService = async (payload: ILoginRequest) => {
     const isValidPassword = await hashing.comparePassword(password, user.password)
     if (!isValidPassword) {
         throw new CustomError(responseMessage.auth.INVALID_EMAIL_OR_PASSWORD, 400)
+    }
+
+    // 🔐 Email verification check
+    console.log("ACCOUNT STATUS:", user.accountConfimation.status)
+
+    if (!user.accountConfimation.status) {
+    throw new CustomError(responseMessage.auth.UNVERIFIED_ACCOUNT, 403)
     }
 
     //Genrate tokens

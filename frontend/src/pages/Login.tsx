@@ -14,6 +14,9 @@ export default function Login() {
 
       console.log('LOGIN SUCCESS:', res.data)
 
+       // ✅ SAVE TOKEN (THIS IS THE MISSING PIECE)
+      localStorage.setItem('accessToken', res.data.data.accessToken)
+
       alert('Login successful')
 
       navigate('/dashboard')
