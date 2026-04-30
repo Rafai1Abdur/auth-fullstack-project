@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../api/axios'
+import '../styles/auth.css'
 
 export default function Register() {
     const [name, setName] = useState('')
@@ -26,37 +27,48 @@ export default function Register() {
   }
 
   return (
-    <div>
-      <h2>Register</h2>
-      // Name is required, min 2 chars, max 72 chars
-      <input placeholder="Name" onChange={(e) => setName(e.target.value)} />
-      
-      // Email is required, must be valid email format
+  <div className="auth-container">
+    <div className="auth-card">
+      <h2 className="auth-title">Register</h2>
+
       <input
+        className="auth-input"
+        placeholder="Name"
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <input
+        className="auth-input"
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
       />
-      
-      // Password is required, min 8 chars, max 24 chars, must contain uppercase, lowercase, number, special char
+
       <input
+        className="auth-input"
+        placeholder="Phone Number"
+        onChange={(e) => setPhoneNumber(e.target.value)}
+      />
+
+      <input
+        className="auth-input"
         placeholder="Password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      
-      // Phone number is required, min 4 chars, max 20 chars
-      <input placeholder="Phone Number" onChange={(e) => setPhoneNumber(e.target.value)} />
-      
-      // Consent Checkbar
+
       <label>
         <input
-    type="checkbox"
-    onChange={(e) => setConsent(e.target.checked)}
-            />
+          type="checkbox"
+           onChange={(e) => setConsent(e.target.checked)}
+      />
              I agree to terms
-        </label>
+      </label>
       
-      <button onClick={handleRegister}>Register</button>
+      <button className="auth-button" onClick={handleRegister}>
+        Register
+      </button>
     </div>
-  )
+  </div>
+)
+
 }

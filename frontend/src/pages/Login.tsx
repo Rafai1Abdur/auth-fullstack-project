@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { loginApi } from '../api/auth'
 import { useNavigate } from 'react-router-dom'
+import '../styles/auth.css'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -26,21 +27,28 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <h1>LOGIN</h1>
+  <div className="auth-container">
+    <div className="auth-card">
+      <h2 className="auth-title">Login</h2>
 
       <input
+        className="auth-input"
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
       />
 
       <input
+        className="auth-input"
         placeholder="Password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button onClick={handleLogin}>Login</button>
+      <button className="auth-button" onClick={handleLogin}>
+        Login
+      </button>
     </div>
-  )
+  </div>
+      )
 }
+
