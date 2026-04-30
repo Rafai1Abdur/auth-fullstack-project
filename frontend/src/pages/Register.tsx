@@ -56,13 +56,14 @@ export default function Register() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <label>
-        <input
-          type="checkbox"
-           onChange={(e) => setConsent(e.target.checked)}
+      <div className="auth-checkbox-container">
+      <input
+        type="checkbox"
+        className="auth-checkbox"
+        onChange={(e) => setConsent(e.target.checked)}
       />
-             I agree to terms
-      </label>
+      <span>I agree to the terms and conditions</span>
+      </div>
       
       <button className="auth-button" onClick={handleRegister}>
         Register

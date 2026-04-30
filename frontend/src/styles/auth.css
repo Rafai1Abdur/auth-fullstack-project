@@ -47,3 +47,19 @@
   background: #2563eb;
   transition: 0.2s;
 }
+
+/* Checkbox container */
+.auth-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+/* Checkbox */
+.auth-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
