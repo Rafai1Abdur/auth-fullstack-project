@@ -224,6 +224,24 @@ export const refreshTokenService = async (refreshToken: string) => {
         config.TOKENS.REFRESH.SECRET
     ) as IDecryptedJwt
 
+    // If token is invalid or expired, jwt.verifyToken will throw an error which will be caught in the controller and handled accordingly
+    export const getMeService = async (userId: string) => {
+    const user = await query.findUserById(userId)
+
+    if (!user) {
+        throw new CustomError('User not found', 404)
+    }
+
+    return {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+}
+
+
+
     // 2. Check if token exists in DB
     const existingToken = await tokenRepository.findToken(refreshToken)
 
@@ -257,4 +275,5 @@ export const refreshTokenService = async (refreshToken: string) => {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken
     }
+
 }

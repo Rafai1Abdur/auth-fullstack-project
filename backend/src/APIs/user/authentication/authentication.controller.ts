@@ -14,6 +14,8 @@ import config from '../../../config/config'
 import query from '../_shared/repo/token.repository'
 // Importing the refreshTokenService to handle token refreshing
 import { refreshTokenService } from './authentication.service'
+import { IAuthenticateRequest } from '../../../types/types'
+import { getMeService } from './authentication.service'
 
 export default {
     register: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -157,5 +159,18 @@ export default {
             httpError(next, error, request, 500)
         }
     }
+ }),
+    
+    export const getMe = asyncHandler(async (req: IAuthenticateRequest, res) => {
+    const userId = req.authenticatedUser._id.toString()
+
+    const data = await getMeService(userId)
+
+    res.status(200).json({
+        success: true,
+        message: 'User fetched successfully',
+        data
+    })
 })
+
 }

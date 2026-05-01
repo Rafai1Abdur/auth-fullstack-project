@@ -1,0 +1,40 @@
+.dashboard-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+}
+
+.dashboard-card {
+  background: #1e293b;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.dashboard-title {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.dashboard-text {
+  color: #cbd5f5;
+  margin-bottom: 20px;
+}
+
+.logout-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #dc2626;
+  transition: 0.2s;
+}

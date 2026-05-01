@@ -1,47 +1,27 @@
-import { useEffect } from "react"
+import { useNavigate } from 'react-router-dom'
+import '../styles/dashboard.css'
 
-const Dashboard = () => {
+export default function Dashboard() {
+  const navigate = useNavigate()
 
-  // 🔒 PROTECT ROUTE
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-
-    if (!token) {
-      window.location.href = "/login"
-    }
-  }, [])
-
-  // 🔓 LOGOUT FUNCTION
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:3000/v1/logout", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        credentials: "include",
-      })
-
-      // 🧹 Clear token
-      localStorage.removeItem("accessToken")
-
-      // 🔁 Redirect to login
-      window.location.href = "/login"
-
-    } catch (error) {
-      console.error("Logout failed", error)
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+    navigate('/login')
   }
 
   return (
-    <div>
-      <h1>Protected Dashboard</h1>
+    <div className="dashboard-container">
+      <div className="dashboard-card">
+        <h1 className="dashboard-title">Dashboard</h1>
 
-      <button onClick={handleLogout}>
-        Logout
-      </button>
+        <p className="dashboard-text">
+          Welcome! You are successfully logged in 🎉
+        </p>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   )
 }
-
-export default Dashboard
