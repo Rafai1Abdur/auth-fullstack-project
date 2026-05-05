@@ -27,7 +27,11 @@ export interface IUser {
     lastLoginAt: Date | null
     consent: boolean
 }
-
+/*
 export interface IUserWithId extends IUser {
     _id: string
 }
+*/
+
+// This type is used to return user data without the ObjectId type, making it easier to work with in the frontend
+export type IUserResponse = Omit<IUser, '_id'> & { _id: string }
