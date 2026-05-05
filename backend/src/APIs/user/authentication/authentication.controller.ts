@@ -161,8 +161,14 @@ export default {
     }
  }),
     
-    export const getMe = asyncHandler(async (req: IAuthenticateRequest, res) => {
-    const userId = req.authenticatedUser._id.toString()
+   getMe: asyncHandler(async (req: Request, res: Response) => {
+    const authReq = req as IAuthenticateRequest
+
+    const userId = authReq.authenticatedUser._id?.toString()
+
+        if (!userId) {
+        throw new CustomError('User ID not found', 401)
+    }
 
     const data = await getMeService(userId)
 
@@ -172,5 +178,4 @@ export default {
         data
     })
 })
-
 }

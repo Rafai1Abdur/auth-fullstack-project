@@ -1,6 +1,8 @@
 import { EUserRoles } from '../../../../constant/users'
+import { Types } from 'mongoose'
 
 export interface IUser {
+    _id?: Types.ObjectId
     name: string
     email: string
     phoneNumber: {
