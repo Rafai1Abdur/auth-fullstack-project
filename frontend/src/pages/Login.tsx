@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { loginApi } from '../api/auth'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import '../styles/auth.css'
 
 export default function Login() {
+  const { login } = useAuth()
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -20,6 +22,7 @@ export default function Login() {
 
       alert('Login successful')
 
+      login(res.data.user)
       navigate('/dashboard')
     } catch (err: any) {
       alert(err.response?.data?.message || 'Login failed')
