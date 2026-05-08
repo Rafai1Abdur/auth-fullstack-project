@@ -17,13 +17,15 @@ export default function Login() {
 
       console.log('LOGIN SUCCESS:', res.data)
 
+      window.location.href = '/dashboard'
+
        // ✅ SAVE TOKEN (THIS IS THE MISSING PIECE)
       localStorage.setItem('accessToken', res.data.data.accessToken)
 
       alert('Login successful')
 
       login(res.data.user)
-      navigate('/dashboard')
+      
     } catch (err: any) {
       alert(err.response?.data?.message || 'Login failed')
     }

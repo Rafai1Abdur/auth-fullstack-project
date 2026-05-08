@@ -11,5 +11,6 @@ router.route('/registeration/confirm/:token').get(authenticationController.confi
 router.route('/login').post(authenticationController.login)
 router.route('/logout').put(authenticate, authenticationController.logout)
 router.route('/refresh').post(authenticationController.refreshToken)
+router.route('/me').get(authenticate, authenticationController.getMe)
 
 export default router
