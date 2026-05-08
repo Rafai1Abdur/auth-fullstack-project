@@ -5,17 +5,12 @@ import httpError from '../../../handlers/errorHandler/httpError'
 import { IConfirmRegistration, ILogin, ILoginRequest, IRegister, IRegisterRequest } from './types/authentication.interface'
 import { validateSchema } from '../../../utils/joi-validate'
 import { loginSchema, registerSchema } from './validation/validation.schema'
-import { accountConfirmationService, loginService, registrationService } from './authentication.service'
+import { accountConfirmationService, loginService, registrationService, refreshTokenService, getMeService } from './authentication.service'
 import { CustomError } from '../../../utils/errors'
 import asyncHandler from '../../../handlers/async'
-import health from '../../../utils/health'
-import { EApplicationEnvironment } from '../../../constant/application'
 import config from '../../../config/config'
 import query from '../_shared/repo/token.repository'
-// Importing the refreshTokenService to handle token refreshing
-import { refreshTokenService } from './authentication.service'
 import { IAuthenticateRequest } from '../../../types/types'
-import { getMeService } from './authentication.service'
 
 export default {
     register: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -70,24 +65,19 @@ export default {
 
             const isLoggedIn = await loginService(payload)
             if (isLoggedIn.success === true) {
-                //sending cookies
-                const DOMAIN = health.getDomain()
+                //sending cookies - no path restriction for development
                 response
                     .cookie('accessToken', isLoggedIn.accessToken, {
-                        path: '/v1',
-                        domain: DOMAIN,
                         sameSite: 'strict',
                         maxAge: 1000 * config.TOKENS.ACCESS.EXPIRY,
                         httpOnly: true,
-                        secure: !(config.ENV === EApplicationEnvironment.DEVELOPMENT)
+                        secure: false
                     })
                     .cookie('refreshToken', isLoggedIn.refreshToken, {
-                        path: '/v1',
-                        domain: DOMAIN,
                         sameSite: 'strict',
                         maxAge: 1000 * config.TOKENS.REFRESH.EXPIRY,
                         httpOnly: true,
-                        secure: !(config.ENV === EApplicationEnvironment.DEVELOPMENT)
+                        secure: false
                     })
 
                 httpResponse(response, request, 200, responseMessage.auth.LOGIN_SUCCESSFUL, isLoggedIn)
@@ -110,25 +100,10 @@ export default {
                 await query.deleteToken(refreshToken)
             }
 
-            const DOMAIN = health.getDomain()
-            //Clearing cookies
+            // Clearing cookies - must match exactly what was set
             response
-                .clearCookie('accessToken', {
-                    path: '/v1',
-                    domain: DOMAIN,
-                    sameSite: 'strict',
-                    maxAge: 1000 * config.TOKENS.ACCESS.EXPIRY,
-                    httpOnly: true,
-                    secure: !(config.ENV === EApplicationEnvironment.DEVELOPMENT)
-                })
-                .clearCookie('refreshToken', {
-                    path: '/v1',
-                    domain: DOMAIN,
-                    sameSite: 'strict',
-                    maxAge: 1000 * config.TOKENS.REFRESH.EXPIRY,
-                    httpOnly: true,
-                    secure: !(config.ENV === EApplicationEnvironment.DEVELOPMENT)
-                })
+                .clearCookie('accessToken')
+                .clearCookie('refreshToken')
 
             httpResponse(response, request, 200, responseMessage.SUCCESS, null)
         } catch (error) {

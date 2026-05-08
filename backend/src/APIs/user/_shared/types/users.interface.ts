@@ -28,6 +28,6 @@ export interface IUser {
     consent: boolean
 }
 
-export interface IUserWithId extends IUser {
+export interface IUserWithId extends Omit<IUser, '_id'> {
     _id: string
 }

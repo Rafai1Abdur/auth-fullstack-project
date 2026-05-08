@@ -1,22 +1,18 @@
-import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
 
 export default function Dashboard() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+    const { user, logout } = useAuth()
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+    const handleLogout = async () => {
+        await logout()
+    }
 
-  return (
-    <div>
-      <h1>Welcome {user?.name}</h1>
+    if (!user) return null
 
-      <button onClick={handleLogout}>
-        Logout
-      </button>
-    </div>
-  )
+    return (
+        <div>
+            <h1>Welcome {user.name}</h1>
+            <button onClick={handleLogout}>Logout</button>
+        </div>
+    )
 }

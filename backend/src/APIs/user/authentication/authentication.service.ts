@@ -135,11 +135,9 @@ export const accountConfirmationService = async (token: string, code: string) =>
 }
 
 export const loginService = async (payload: ILoginRequest) => {
-    const { email, password } = payload
+    const { email, password: inputPassword } = payload
 
     //Check if the user is registered
-    //const user = await query.findUserByEmail('email', 'password')
-    
     const user = await query.findUserByEmail(email, '+password')
     
     if (!user) {
@@ -147,16 +145,17 @@ export const loginService = async (payload: ILoginRequest) => {
     }
 
     //Validate password
-    const isValidPassword = await hashing.comparePassword(password, user.password)
+    const isValidPassword = await hashing.comparePassword(inputPassword, user.password)
     if (!isValidPassword) {
         throw new CustomError(responseMessage.auth.INVALID_EMAIL_OR_PASSWORD, 400)
     }
 
     // 🔐 Email verification check
-    console.log("ACCOUNT STATUS:", user.accountConfimation.status)
+    // eslint-disable-next-line no-console
+    console.log('ACCOUNT STATUS:', user.accountConfimation.status)
 
     if (!user.accountConfimation.status) {
-    throw new CustomError(responseMessage.auth.UNVERIFIED_ACCOUNT, 403)
+        throw new CustomError(responseMessage.auth.UNVERIFIED_ACCOUNT, 403)
     }
 
     //Genrate tokens
@@ -169,20 +168,29 @@ export const loginService = async (payload: ILoginRequest) => {
 
     //Storing refresh token into db
     const token: IToken = {
-    token: refreshToken,
-    // Adding userId to the token object for better tracking and management
-    userId: user._id.toString()
+        token: refreshToken,
+        userId: user._id.toString()
     }
     await tokenRepository.createToken(token)
 
-    //delete (user as any).password
-    //const { password, ...safeUser } = user.toObject()
+    // Return user without password field
+    const userResponse = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        timezone: user.timezone,
+        accountConfimation: user.accountConfimation,
+        passwordReset: user.passwordReset,
+        lastLoginAt: user.lastLoginAt
+    }
 
     return {
         success: true,
-        user: user,
-        accessToken: accessToken,
-        refreshToken: refreshToken
+        user: userResponse,
+        accessToken,
+        refreshToken
     }
 }
 

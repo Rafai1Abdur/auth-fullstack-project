@@ -1,59 +1,68 @@
 import { useState } from 'react'
-import { loginApi } from '../api/auth'
+import { api } from '../api/axios'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import '../styles/auth.css'
 
-export default function Login() {
-  const { login } = useAuth()
-  const navigate = useNavigate()
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleLogin = async () => {
-    try {
-      const res = await loginApi({ email, password })
-
-      console.log('LOGIN SUCCESS:', res.data)
-
-      window.location.href = '/dashboard'
-
-       // ✅ SAVE TOKEN (THIS IS THE MISSING PIECE)
-      localStorage.setItem('accessToken', res.data.data.accessToken)
-
-      alert('Login successful')
-
-      login(res.data.user)
-      
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Login failed')
+type AxiosError = {
+    response?: {
+        data?: {
+            message?: string
+        }
     }
-  }
+}
 
-  return (
-  <div className="auth-container">
-    <div className="auth-card">
-      <h2 className="auth-title">Login</h2>
+export default function Login() {
+    const { login } = useAuth()
+    const navigate = useNavigate()
 
-      <input
-        className="auth-input"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
-      <input
-        className="auth-input"
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    const handleLogin = async () => {
+        try {
+            const res = await api.post('/login', { email, password })
 
-      <button className="auth-button" onClick={handleLogin}>
-        Login
-      </button>
-    </div>
-  </div>
-      )
+            // Backend returns: { data: { success, user, accessToken, refreshToken } }
+            const { user } = res.data.data
+            const { accessToken } = res.data.data
+
+            // Store access token for authenticated requests
+            if (accessToken) {
+                localStorage.setItem('accessToken', accessToken)
+            }
+
+            login(user)
+            navigate('/dashboard')
+        } catch (err) {
+            const error = err as AxiosError
+            alert(error.response?.data?.message || 'Login failed')
+        }
+    }
+
+    return (
+        <div className="auth-container">
+            <div className="auth-card">
+                <h2 className="auth-title">Login</h2>
+
+                <input
+                    className="auth-input"
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <input
+                    className="auth-input"
+                    placeholder="Password"
+                    type="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button className="auth-button" onClick={handleLogin}>
+                    Login
+                </button>
+            </div>
+        </div>
+    )
 }
 
