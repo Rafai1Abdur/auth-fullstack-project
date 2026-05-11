@@ -34,7 +34,7 @@ BACKEND: 95% Complete
 - API structure: Controller → Service → Repository → Model
 - Database: MongoDB with User & Token models
 
-FRONTEND: 50% Complete
+FRONTEND: 85% Complete
 - AuthContext with auto-login via /me endpoint
 - Axios interceptors (token attachment, 401 handling)
 - Login page (fixed response parsing, password excluded)
@@ -42,6 +42,11 @@ FRONTEND: 50% Complete
 - Dashboard (protected route)
 - Home page (landing)
 - Fixed: Auto-login infinite refresh, logout session clearing
+- Fixed: Redirect loops on auth checks
+- Fixed: Cookie clearing on logout (proper options)
+- Fixed: Method mismatch (logout POST vs PUT)
+- Added: /Home route access
+- Added: GuestRoute protection (prevent login/register access when authenticated)
 
 =====================================
 WHAT WAS FIXED THIS SESSION
@@ -59,8 +64,8 @@ WHAT WAS FIXED THIS SESSION
 =====================================
 KNOWN ISSUES
 =====================================
-1. Page refresh loop on first load (fixed in this session)
-2. Logout cookies clearing (fixed in this session - simplified cookie options)
+1. Page refresh loop on first load (FIXED in this session)
+2. Logout cookies clearing (FIXED in this session - proper cookie options)
 3. No role system yet (middleware ready, need to implement roles in User model & routes)
 4. Register page missing name & phone validation (frontend has fields, needs frontend validation)
 5. Email confirmation endpoint may have issues (needs testing)

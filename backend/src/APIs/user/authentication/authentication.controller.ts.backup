@@ -1,0 +1,156 @@
+import { NextFunction, Request, Response } from 'express'
+import httpResponse from '../../../handlers/httpResponse'
+import responseMessage from '../../../constant/responseMessage'
+import httpError from '../../../handlers/errorHandler/httpError'
+import { IConfirmRegistration, ILogin, ILoginRequest, IRegister, IRegisterRequest } from './types/authentication.interface'
+import { validateSchema } from '../../../utils/joi-validate'
+import { loginSchema, registerSchema } from './validation/validation.schema'
+import { accountConfirmationService, loginService, registrationService, refreshTokenService, getMeService } from './authentication.service'
+import { CustomError } from '../../../utils/errors'
+import asyncHandler from '../../../handlers/async'
+import config from '../../../config/config'
+import query from '../_shared/repo/token.repository'
+import { IAuthenticateRequest } from '../../../types/types'
+
+export default {
+    register: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const { body } = request as IRegister
+
+            //Payload validation
+            const { error, payload } = validateSchema<IRegisterRequest>(registerSchema, body)
+            if (error) {
+                return httpError(next, error, request, 422)
+            }
+
+            const registrationResult = await registrationService(payload)
+            if (registrationResult.success === true) {
+                httpResponse(response, request, 201, responseMessage.auth.USER_REGISTERED, registrationResult)
+            }
+        } catch (error) {
+            if (error instanceof CustomError) {
+                httpError(next, error, request, error.statusCode)
+            } else {
+                httpError(next, error, request, 500)
+            }
+        }
+    }),
+    confirmRegistration: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const { params, query } = request as IConfirmRegistration
+
+            const { token } = params
+            const { code } = query
+
+            const user = await accountConfirmationService(token, code)
+
+            httpResponse(response, request, 201, responseMessage.auth.USER_REGISTERED, user)
+        } catch (error) {
+            if (error instanceof CustomError) {
+                httpError(next, error, request, error.statusCode)
+            } else {
+                httpError(next, error, request, 500)
+            }
+        }
+    }),
+    login: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const { body } = request as ILogin
+
+            //Payload validation
+            const { error, payload } = validateSchema<ILoginRequest>(loginSchema, body)
+            if (error) {
+                return httpError(next, error, request, 422)
+            }
+
+            const isLoggedIn = await loginService(payload)
+            if (isLoggedIn.success === true) {
+                //sending cookies - no path restriction for development
+                response
+                    .cookie('accessToken', isLoggedIn.accessToken, {
+                        sameSite: 'strict',
+                        maxAge: 1000 * config.TOKENS.ACCESS.EXPIRY,
+                        httpOnly: true,
+                        secure: false
+                    })
+                    .cookie('refreshToken', isLoggedIn.refreshToken, {
+                        sameSite: 'strict',
+                        maxAge: 1000 * config.TOKENS.REFRESH.EXPIRY,
+                        httpOnly: true,
+                        secure: false
+                    })
+
+                httpResponse(response, request, 200, responseMessage.auth.LOGIN_SUCCESSFUL, isLoggedIn)
+            }
+        } catch (error) {
+            if (error instanceof CustomError) {
+                httpError(next, error, request, error.statusCode)
+            } else {
+                httpError(next, error, request, 500)
+            }
+        }
+    }),
+    logout: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const { cookies } = request
+            const { refreshToken } = cookies as {
+                refreshToken: string | undefined
+            }
+            if (refreshToken) {
+                await query.deleteToken(refreshToken)
+            }
+
+            // Clearing cookies - must match exactly what was set
+            response
+                .clearCookie('accessToken')
+                .clearCookie('refreshToken')
+
+            httpResponse(response, request, 200, responseMessage.SUCCESS, null)
+        } catch (error) {
+            httpError(next, error, request, 500)
+        }
+    }),
+    // This function is used to refresh access token using refresh token
+    refreshToken: asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { refreshToken } = request.body as { refreshToken: string }
+
+        if (!refreshToken) {
+            return httpError(
+                next,
+                new CustomError('Refresh token is required', 400),
+                request,
+                400
+            )
+        }
+
+        const result = await refreshTokenService(refreshToken)
+
+        httpResponse(response, request, 200, 'Token refreshed successfully', result)
+    } catch (error) {
+        if (error instanceof CustomError) {
+            httpError(next, error, request, error.statusCode)
+        } else {
+            httpError(next, error, request, 500)
+        }
+    }
+ }),
+    
+   getMe: asyncHandler(async (req: Request, res: Response) => {
+    const authReq = req as IAuthenticateRequest
+
+    const userId = authReq.authenticatedUser._id?.toString()
+
+        if (!userId) {
+        throw new CustomError('User ID not found', 401)
+    }
+
+    const data = await getMeService(userId)
+
+    res.status(200).json({
+        success: true,
+        message: 'User fetched successfully',
+        data
+    })
+})
+}
