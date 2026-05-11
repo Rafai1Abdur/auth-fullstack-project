@@ -1,5 +1,6 @@
 import userModel from '../models/user.model'
 import { IUser } from '../types/users.interface'
+import { EUserRoles } from '../../../../constant/users'
 
 export default {
     findUserByEmail: (email: string, select: string = '') => {
@@ -16,5 +17,11 @@ export default {
     },
     createUser: (payload: IUser) => {
         return userModel.create(payload)
+    },
+    getAllUsers: () => {
+        return userModel.find().select('-password')
+    },
+    updateUserRole: (id: string, role: EUserRoles) => {
+        return userModel.findByIdAndUpdate(id, { role }, { new: true }).select('-password')
     }
 }

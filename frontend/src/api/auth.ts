@@ -13,3 +13,11 @@ export const registerApi = async (data: {
 }) => {
     return api.post('/register', data)
 }
+
+export const getAllUsersApi = async () => {
+    return api.get('/user/management/users')
+}
+
+export const updateUserRoleApi = async (userId: string, role: string) => {
+    return api.patch('/user/management/users/role', { userId, role })
+}
