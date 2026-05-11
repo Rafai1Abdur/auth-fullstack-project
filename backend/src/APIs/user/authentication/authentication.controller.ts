@@ -102,8 +102,16 @@ export default {
 
             // Clearing cookies - must match exactly what was set
             response
-                .clearCookie('accessToken')
-                .clearCookie('refreshToken')
+                .clearCookie('accessToken', {
+                    sameSite: 'strict',
+                    httpOnly: true,
+                    secure: false
+                })
+                .clearCookie('refreshToken', {
+                    sameSite: 'strict',
+                    httpOnly: true,
+                    secure: false
+                })
 
             httpResponse(response, request, 200, responseMessage.SUCCESS, null)
         } catch (error) {

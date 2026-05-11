@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/axios'
 import { AuthContext, type User } from './AuthContextTypes'
+import { useNavigate } from 'react-router-dom'
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     // Auto-login: fetch current user using httpOnly cookies
     useEffect(() => {
@@ -48,8 +50,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await api.post('/logout')
         } catch {
             // Ignore logout errors
+        } finally {
+            setUser(null)
+            // Redirect to login page after logout
+            navigate('/login', { replace: true })
         }
-        setUser(null)
     }
 
     return (

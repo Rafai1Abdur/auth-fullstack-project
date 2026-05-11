@@ -25,10 +25,12 @@ FRONTEND AUTH FLOW FIXES (COMPLETED)
 [✔] Token storage - Axios interceptor for Bearer token
 [✔] Login page - Fixed response parsing (res.data.data.user)
 [✔] Password security - Backend excludes password from response
-[✔] Logout functionality - API call + state cleanup
+[✔] Logout functionality - API call + state cleanup (cookie clearing fixed, method mismatch resolved)
 [✔] ProtectedRoute - Added role prop for future RBAC
 [✔] Error handling - Typed AxiosError instead of any
 [✔] Code organization - Separated context types and hook
+[✔] Auth flow fixes - Added /Home route access, GuestRoute protection for login/register when authenticated
+[✔] Axios interceptor - Fixed infinite redirect loop by excluding auth check endpoints
 
 ------------------------------------
 BACKEND ENHANCEMENTS (COMPLETED)
@@ -107,6 +109,6 @@ FIX LATER (TECH DEBT)
 Overall Project Completion:
 ---------------------------------------------
 BACKEND: 95% COMPLETE (AUTH SYSTEM DONE)
-FRONTEND: 50% COMPLETE (AUTH FLOW FIXED)
+FRONTEND: 85% COMPLETE (AUTH FLOW FIXED + ENHANCEMENTS)
 ARCHITECTURE: CLEAN + SCALABLE
 NEXT PHASE: ROLE SYSTEM + DASHBOARD
