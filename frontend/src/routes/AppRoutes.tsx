@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute'
 import GuestRoute from './GuestRoute'
 import AdminDashboard from '../pages/AdminDashboard'
 import Unauthorized from '../pages/Unauthorized'
+import VendorDashboard from '../pages/VendorDashboard'
 
 export default function AppRoutes() {
     return (
@@ -16,6 +17,7 @@ export default function AppRoutes() {
             <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
             <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/vendor" element={<ProtectedRoute requiredRoles={['admin', 'vendor']}><VendorDashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requiredRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>

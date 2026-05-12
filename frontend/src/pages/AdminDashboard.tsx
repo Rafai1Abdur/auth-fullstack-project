@@ -10,7 +10,7 @@ type User = {
 }
 
 export default function AdminDashboard() {
-    const { user, logout } = useAuth()
+    const { user, logout, switchRole } = useAuth()
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -52,6 +52,16 @@ export default function AdminDashboard() {
             <h1>Admin Dashboard</h1>
             <p>Welcome, {user.name} (Admin)</p>
             <button onClick={handleLogout}>Logout</button>
+
+            <div style={{ margin: '1rem 0', padding: '1rem', border: '1px solid #ddd' }}>
+                <h3>Switch View As:</h3>
+                <button onClick={() => switchRole('vendor')} style={{ margin: '0.5rem' }}>
+                    Vendor View
+                </button>
+                <button onClick={() => switchRole('customer')} style={{ margin: '0.5rem' }}>
+                    Customer View
+                </button>
+            </div>
 
             <h2 style={{ marginTop: '2rem' }}>User Management</h2>
             {loading ? (

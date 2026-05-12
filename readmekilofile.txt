@@ -36,11 +36,11 @@ BACKEND: 96% Complete
 - ROLE SYSTEM: EUserRoles enum expanded (ADMIN, VENDOR, CUSTOMER, USER)
 - Admin endpoints: GET /user/management/users, PATCH /user/management/users/role
 
-FRONTEND: 88% Complete
+FRONTEND: 91% Complete
 - AuthContext with auto-login via /me endpoint
 - Axios interceptors (token attachment, 401 handling)
 - Login page (fixed response parsing, password excluded)
-- Register page (full form with consent)
+- Register page (full form with consent, password requirements list)
 - Dashboard (protected route)
 - Home page (landing)
 - Fixed: Auto-login infinite refresh, logout session clearing
@@ -52,6 +52,12 @@ FRONTEND: 88% Complete
 - Added: Role-based ProtectedRoute with requiredRoles prop
 - Added: AdminDashboard with user management
 - Added: Unauthorized page for access denied
+- Added: Admin auto-redirect on login to /admin
+- Added: Vendor auto-redirect on login to /vendor
+- Added: Role switcher for admin to view as vendor/customer
+- Added: Inline error messages above inputs in red
+- Added: Password requirements list on register page
+- Added: Human-friendly validation messages for all fields
 
 =====================================
 WHAT WAS FIXED THIS SESSION
@@ -84,19 +90,24 @@ KNOWN ISSUES
 =====================================
 1. Email confirmation endpoint may have issues (needs testing)
 2. Register page missing name & phone validation (frontend has fields, needs frontend validation)
-3. Vendor dashboard not yet implemented
+3. Vendor dashboard placeholder created, features pending
 4. Customer features (products, cart, orders) not yet implemented
 
 =====================================
 NEXT PRIORITIES
 =====================================
 1. TEST full auth flow (register → verify email → login → dashboard → logout)
-2. Add Vendor dashboard (product management)
-3. Add Customer features (product listing, cart, orders)
-4. Improve UI/UX (modern design, loading states, error handling)
-5. Add session expiry handling (auto-logout after token expiry)
-6. Dockerize for deployment
-7. GitHub Actions CI/CD
+[x] Admin auto-redirect on login - detect admin role and redirect to /admin
+[x] Admin role switcher - admin can switch between admin/vendor/customer views
+[x] Vendor role switcher - vendor can switch between vendor/customer views
+[ ] Complete Vendor dashboard (product management, categories, sales)
+[ ] Complete Customer features (products, cart, orders, reviews)
+[ ] UI/UX redesign - modern, responsive, attractive design
+[ ] Improve UI/UX (modern design, loading states, error handling)
+[ ] Add session expiry handling (auto-logout after token expiry)
+[ ] Dockerize for deployment
+[ ] GitHub Actions CI/CD
+[ ] (AI Assistance - after all role features are complete)
 
 =====================================
 TESTING COMMANDS
@@ -144,11 +155,12 @@ Frontend:
   src/api/axios.ts        - API client with interceptors
   src/routes/AppRoutes.tsx     - All routes defined
   src/routes/ProtectedRoute.tsx - Route guard with role support
-  src/pages/Login.tsx     - Login form
-  src/pages/Register.tsx  - Registration form
-  src/pages/Dashboard.tsx - Protected page
-  src/pages/AdminDashboard.tsx - Admin user management
-  src/pages/Unauthorized.tsx - Access denied page
+src/pages/Login.tsx     - Login form
+src/pages/Register.tsx  - Registration form
+src/pages/Dashboard.tsx - Protected page
+src/pages/AdminDashboard.tsx - Admin user management
+src/pages/VendorDashboard.tsx - Vendor dashboard placeholder
+src/pages/Unauthorized.tsx - Access denied page
 
 =====================================
 GITHUB REPO STATUS
@@ -187,7 +199,7 @@ IMPORTANT NOTES FOR NEW DEVICE
 
 5. Token rotation: Each refresh replaces old refresh token (rotates)
 
-6. Current focus: Vendor/Customer dashboards + e-commerce features
+6. Current focus: Vendor features + Customer features + UI enhancement
 
 =====================================
 ARCHITECTURE DECISIONS
@@ -200,6 +212,25 @@ ARCHITECTURE DECISIONS
 - Frontend uses React Context for global state
 - Axios interceptors centralize auth logic
 - Separate API layer (src/api/) for all endpoints
+- AI CSR agent planned for customer support automation
+- Agent system for admin/vendor assistance
+
+=====================================
+AI ASSISTANCE (PLANNED - AFTER ROLE FEATURES)
+=====================================
+- AI CSR agent for customer support (chat endpoint)
+- Natural language order tracking and queries
+- Product recommendation engine
+- FAQ automation with knowledge base
+- Escalation system for complex issues
+
+=====================================
+AGENT SYSTEM (PLANNED - AFTER ROLE FEATURES)
+=====================================
+- Vendor agent: inventory/product management
+- Admin agent: user/role management assistance
+- Shared analytics dashboard for AI performance
+- Role-based AI tools and permissions
 
 ====================================
 EOF

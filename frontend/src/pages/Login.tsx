@@ -1,42 +1,30 @@
 import { useState } from 'react'
 import { api } from '../api/axios'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import '../styles/auth.css'
 
-type AxiosError = {
-    response?: {
-        data?: {
-            message?: string
-        }
-    }
-}
-
 export default function Login() {
     const { login } = useAuth()
-    const navigate = useNavigate()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState<string | null>(null)
 
     const handleLogin = async () => {
+        setError(null)
         try {
             const res = await api.post('/login', { email, password })
 
-            // Backend returns: { data: { success, user, accessToken, refreshToken } }
             const { user } = res.data.data
             const { accessToken } = res.data.data
 
-            // Store access token for authenticated requests
             if (accessToken) {
                 localStorage.setItem('accessToken', accessToken)
             }
 
             login(user)
-            navigate('/dashboard')
-        } catch (err) {
-            const error = err as AxiosError
-            alert(error.response?.data?.message || 'Login failed')
+        } catch {
+            setError('Your Email or Password is incorrect')
         }
     }
 
@@ -44,6 +32,8 @@ export default function Login() {
         <div className="auth-container">
             <div className="auth-card">
                 <h2 className="auth-title">Login</h2>
+
+                {error && <div className="auth-error">{error}</div>}
 
                 <input
                     className="auth-input"
@@ -65,4 +55,3 @@ export default function Login() {
         </div>
     )
 }
-

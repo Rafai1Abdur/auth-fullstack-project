@@ -12,6 +12,8 @@ type AuthContextType = {
     loading: boolean
     login: (user: User) => void
     logout: () => Promise<void>
+    switchRole: (role: string) => void
+    viewAsRole: string | null
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null)
